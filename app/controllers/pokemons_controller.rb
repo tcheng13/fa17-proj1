@@ -9,25 +9,28 @@ class PokemonsController < ApplicationController
   def damage
     pokemon = Pokemon.find(params[:id])
     pokemon.health -= 10
-    if pokemon.health <= 0
+    if pokemon.health != 0
+      pokemon.save
+    else
       pokemon.destroy
     end
-    pokemon.save
     redirect_to trainer_path(current_trainer)
 
   end
 
   def new
-    @okemon = Pokemon.new
-
+    @pokemon = Pokemon.new
   end
 
   def create
     @pokemon = Pokemon.new(name: params[:pokemon][:name])
     @pokemon.level = 1
-    @poekemon.health = 100
+    @pokemon.health = 100
     @pokemon.trainer = current_trainer
-    @pokemon.save
-    redirect_to trainer_path(current_trainer)
+    if @pokemon.save
+      redirect_to trainer_path(current_trainer)
+    else
+      flash[:error] = @pokemon.errors.full_messages.to_sentence
+    end
   end
 end
